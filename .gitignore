@@ -2,11 +2,17 @@
 node_modules/
 __pycache__/
 
-# books.js 的多份历史备份（正式数据只有 js/data/books.js）
+# books.js 的历史备份与损坏样本（正式数据只有 js/data/books.js）
 *.bak*
+*.broken*
 
 # 构建产物副本（正式产物在 share/，由 build-standalone.js 生成）
 standalone.html
+
+# 运行日志与脚本输出
+*.log
+smoke_result.txt
+.*_out.txt
 
 # 本地临时文件与一次性诊断脚本
 _*.txt
