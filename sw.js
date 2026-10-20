@@ -1,5 +1,5 @@
 // Service Worker：离线缓存应用外壳，断网也能打开学习
-const CACHE = 'hola-es-v1';
+const CACHE = 'hola-es-v4';   // 外壳（CSS/JS/主题/数据）变更后升版，强制已安装客户端刷新缓存
 const ASSETS = [
   './',
   './index.html',
