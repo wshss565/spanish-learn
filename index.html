@@ -105,6 +105,52 @@
 
 <nav class="tabbar" id="bottomNav"></nav>
 
+<!-- 启动遮罩：源码版要先下载并解析 2.3 MB 词库才能渲染，期间给明确反馈，别对着空壳等 -->
+<div class="boot-mask" id="boot">
+  <div class="boot-card">
+    <div class="boot-spin"></div>
+    <p class="boot-t">正在加载词库…</p>
+    <p class="boot-s">首次加载需下载约 2.3 MB 词库，请稍候</p>
+  </div>
+</div>
+
+<script>
+/* 错误兜底 + 启动遮罩管理
+   —— 之前这段只在「打包后的单文件版」里由 build-standalone.js 注入，源码版没有。
+      结果：模块图一加载失败，用户只看到一片空白，既没有提示也定位不了。
+      现在源码版与构建版共用这一段（写在 index.html 里，构建时原样带过去）。 */
+(function () {
+  var box = null;
+  function show(title, detail) {
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'errbox';
+      box.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#1c1414;color:#ffd9d9;font:13px/1.6 monospace;padding:20px;overflow:auto;white-space:pre-wrap';
+      document.body.appendChild(box);
+    }
+    box.textContent = '⚠️ ' + title + '\n\n' + detail;
+  }
+  function hideBoot() {
+    var b = document.getElementById('boot');
+    if (b) { b.classList.add('out'); setTimeout(function () { b.remove(); }, 260); }
+  }
+  window.addEventListener('error', function (e) {
+    show('运行出错（请把这段发我）', (e.message || e.error || e) + '\n' + (e.filename || '') + ':' + (e.lineno || ''));
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    show('Promise 错误', (e.reason && e.reason.stack) || String(e.reason));
+  });
+  // 渲染完成 = #view 里出现了内容（源码版与构建版都往 #view 写，通用）
+  var v = document.getElementById('view');
+  if (v) {
+    var mo = new MutationObserver(function () {
+      if (v.childElementCount) { mo.disconnect(); hideBoot(); }
+    });
+    mo.observe(v, { childList: true });
+  }
+})();
+</script>
+
 <script type="module" src="js/app.js"></script>
 <script>
 // PWA：注册 Service Worker（离线可用 + 可添加到主屏幕）

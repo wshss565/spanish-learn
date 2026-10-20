@@ -44,14 +44,26 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // 静态资源：缓存优先
+  // 静态资源：
+  //   小体积的代码文件（js/css，< 512KB）走 stale-while-revalidate —— 先用缓存秒开，
+  //   后台悄悄拉新版并更新缓存。这样代码更新后下一次访问就能生效，
+  //   不再依赖「记得升 CACHE 版本号」这件事（漏升就会让用户一直跑旧代码）。
+  //   大文件（js/data/books.js 约 2.3MB）保持 cache-first：每次访问都后台重下 2.3MB
+  //   对移动网络不友好，而词库内容变旧并不会让应用出错。
   e.respondWith(
-    caches.match(req).then(hit => hit || fetch(req).then(res => {
-      if (res && res.ok) {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(req, copy));
-      }
-      return res;
-    }))
+    caches.match(req).then(hit => {
+      const net = fetch(req).then(res => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(req, copy));
+        }
+        return res;
+      }).catch(() => hit);
+      if (!hit) return net;
+      const len = Number(hit.headers.get('content-length') || 0);
+      const isCode = /\.(?:js|mjs|css)$/.test(new URL(req.url).pathname);
+      if (isCode && len && len < 512 * 1024) { net.catch(() => {}); return hit; }
+      return hit;
+    })
   );
 });

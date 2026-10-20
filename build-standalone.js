@@ -28,28 +28,15 @@ async function main() {
   // 3) 读 index.html 取 body 结构（导航壳层），CSS/JS 内联替换
   const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 
-  // 4) 错误兜底：任意运行时错误直接显示在页面上，避免“白屏不知道为啥”
-  const guard = `
-  <div id="errbox" style="display:none;position:fixed;inset:0;z-index:9999;background:#1c1414;color:#ffd9d9;font:13px/1.6 monospace;padding:20px;overflow:auto;white-space:pre-wrap"></div>
-  <script>
-    window.addEventListener('error', function(e){
-      var b=document.getElementById('errbox'); if(!b) return;
-      b.style.display='block';
-      b.textContent='⚠️ 运行出错（请把这段发我）：\\n\\n'+(e.message||e.error||e)+'\\n'+(e.filename||'')+':'+(e.lineno||'');
-    });
-    window.addEventListener('unhandledrejection', function(e){
-      var b=document.getElementById('errbox'); if(!b) return;
-      b.style.display='block';
-      b.textContent='⚠️ Promise 错误：\\n\\n'+(e.reason&&e.reason.stack||e.reason||e);
-    });
-  </script>`;
+  // 4) 错误兜底与启动遮罩已经写在 index.html 里（源码版与构建版共用同一段），
+  //    这里不再重复注入，否则会出现两个 #errbox。
 
   // 5) 组装：保留原 shell 的 header/main/nav 结构，CSS 内联，JS 内联（IIFE）
   // 用「函数替换」而非字符串替换：字符串替换里 $& / $` / $' / $1 会被当成特殊模式展开，
   // 一旦内联的 JS/CSS 里出现这些字面量（如 replace(/x/g, '\\$&')），产物就会被写坏。
   let out = html
     .replace('<link rel="stylesheet" href="css/styles.css">', () => '<style>\n' + css + '\n</style>')
-    .replace('<script type="module" src="js/app.js"></script>', () => guard + '\n<script>\n' + js + '\n</script>');
+    .replace('<script type="module" src="js/app.js"></script>', () => '<script>\n' + js + '\n</script>');
 
   const outPath = path.join(ROOT, 'standalone.html');
   fs.writeFileSync(outPath, out, 'utf8');

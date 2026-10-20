@@ -1119,3 +1119,32 @@ body.toast-open .cw-bubble{opacity:.35}
 :root[data-theme="nocturno"] .ab.rec-on{background:rgba(244,196,48,.16);border-color:var(--brand);color:#fff}
 :root[data-theme="nocturno"] *::-webkit-scrollbar-thumb{background:#4a4038}
 :root[data-theme="nocturno"]{scrollbar-color:#4a4038 transparent}
+
+/* ============================================================
+   启动遮罩：源码版要先下载并解析 2.3 MB 词库（books.js）才能渲染，
+   期间给一个明确反馈，别让用户对着空壳等。渲染完成即移除。
+   ============================================================ */
+.boot-mask{
+  position:fixed; inset:0; z-index:9000;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg);
+  transition:opacity var(--t) var(--ease);
+}
+.boot-mask.out{opacity:0; pointer-events:none}
+.boot-card{
+  display:flex; flex-direction:column; align-items:center; gap:var(--s3);
+  padding:var(--s6) var(--s5);
+  background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r-xl); box-shadow:var(--sh-2);
+  backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
+  text-align:center; max-width:min(88vw,420px);
+}
+.boot-spin{
+  width:30px; height:30px; border-radius:50%;
+  border:3px solid var(--line); border-top-color:var(--brand);
+  animation:boot-spin .9s linear infinite;
+}
+@keyframes boot-spin{to{transform:rotate(360deg)}}
+.boot-t{font-size:15px; font-weight:600; color:var(--ink)}
+.boot-s{font-size:13px; color:var(--hint); line-height:1.6}
+@media (prefers-reduced-motion:reduce){.boot-spin{animation-duration:2.4s}}

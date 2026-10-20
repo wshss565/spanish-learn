@@ -1145,6 +1145,35 @@ body.toast-open .cw-bubble{opacity:.35}
 :root[data-theme="nocturno"] *::-webkit-scrollbar-thumb{background:#4a4038}
 :root[data-theme="nocturno"]{scrollbar-color:#4a4038 transparent}
 
+/* ============================================================
+   启动遮罩：源码版要先下载并解析 2.3 MB 词库（books.js）才能渲染，
+   期间给一个明确反馈，别让用户对着空壳等。渲染完成即移除。
+   ============================================================ */
+.boot-mask{
+  position:fixed; inset:0; z-index:9000;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg);
+  transition:opacity var(--t) var(--ease);
+}
+.boot-mask.out{opacity:0; pointer-events:none}
+.boot-card{
+  display:flex; flex-direction:column; align-items:center; gap:var(--s3);
+  padding:var(--s6) var(--s5);
+  background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r-xl); box-shadow:var(--sh-2);
+  backdrop-filter:blur(var(--blur)); -webkit-backdrop-filter:blur(var(--blur));
+  text-align:center; max-width:min(88vw,420px);
+}
+.boot-spin{
+  width:30px; height:30px; border-radius:50%;
+  border:3px solid var(--line); border-top-color:var(--brand);
+  animation:boot-spin .9s linear infinite;
+}
+@keyframes boot-spin{to{transform:rotate(360deg)}}
+.boot-t{font-size:15px; font-weight:600; color:var(--ink)}
+.boot-s{font-size:13px; color:var(--hint); line-height:1.6}
+@media (prefers-reduced-motion:reduce){.boot-spin{animation-duration:2.4s}}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -1228,20 +1257,52 @@ body.toast-open .cw-bubble{opacity:.35}
 
 <nav class="tabbar" id="bottomNav"></nav>
 
+<!-- 启动遮罩：源码版要先下载并解析 2.3 MB 词库才能渲染，期间给明确反馈，别对着空壳等 -->
+<div class="boot-mask" id="boot">
+  <div class="boot-card">
+    <div class="boot-spin"></div>
+    <p class="boot-t">正在加载词库…</p>
+    <p class="boot-s">首次加载需下载约 2.3 MB 词库，请稍候</p>
+  </div>
+</div>
 
-  <div id="errbox" style="display:none;position:fixed;inset:0;z-index:9999;background:#1c1414;color:#ffd9d9;font:13px/1.6 monospace;padding:20px;overflow:auto;white-space:pre-wrap"></div>
-  <script>
-    window.addEventListener('error', function(e){
-      var b=document.getElementById('errbox'); if(!b) return;
-      b.style.display='block';
-      b.textContent='⚠️ 运行出错（请把这段发我）：\n\n'+(e.message||e.error||e)+'\n'+(e.filename||'')+':'+(e.lineno||'');
+<script>
+/* 错误兜底 + 启动遮罩管理
+   —— 之前这段只在「打包后的单文件版」里由 build-standalone.js 注入，源码版没有。
+      结果：模块图一加载失败，用户只看到一片空白，既没有提示也定位不了。
+      现在源码版与构建版共用这一段（写在 index.html 里，构建时原样带过去）。 */
+(function () {
+  var box = null;
+  function show(title, detail) {
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'errbox';
+      box.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#1c1414;color:#ffd9d9;font:13px/1.6 monospace;padding:20px;overflow:auto;white-space:pre-wrap';
+      document.body.appendChild(box);
+    }
+    box.textContent = '⚠️ ' + title + '\n\n' + detail;
+  }
+  function hideBoot() {
+    var b = document.getElementById('boot');
+    if (b) { b.classList.add('out'); setTimeout(function () { b.remove(); }, 260); }
+  }
+  window.addEventListener('error', function (e) {
+    show('运行出错（请把这段发我）', (e.message || e.error || e) + '\n' + (e.filename || '') + ':' + (e.lineno || ''));
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    show('Promise 错误', (e.reason && e.reason.stack) || String(e.reason));
+  });
+  // 渲染完成 = #view 里出现了内容（源码版与构建版都往 #view 写，通用）
+  var v = document.getElementById('view');
+  if (v) {
+    var mo = new MutationObserver(function () {
+      if (v.childElementCount) { mo.disconnect(); hideBoot(); }
     });
-    window.addEventListener('unhandledrejection', function(e){
-      var b=document.getElementById('errbox'); if(!b) return;
-      b.style.display='block';
-      b.textContent='⚠️ Promise 错误：\n\n'+(e.reason&&e.reason.stack||e.reason||e);
-    });
-  </script>
+    mo.observe(v, { childList: true });
+  }
+})();
+</script>
+
 <script>
 (() => {
   var __defProp = Object.defineProperty;
