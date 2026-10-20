@@ -1,0 +1,23 @@
+A2 可信且需例句 22 条（新写 22 / 替换已有例句 0）
+NEW pasado | n | 过去
+NEW cambio | n | 变化；零钱
+NEW compra | n | 购买
+NEW limpio | adj | 干净的
+NEW factura | n | 发票
+NEW pelea | n | 战斗
+NEW regreso | n | 重回
+NEW repente | n | 突然（de repente）
+NEW pedido | adj | 要求
+NEW visita | n | 访问
+NEW robo | n | 失窃
+NEW roto | n | 断链
+NEW descanso | n | 休息
+NEW abierto | n | 打开
+NEW paga | n | 工资袋
+NEW peso | n | 重量
+NEW dormido | adj | 睡着了
+NEW pago | n | 付款
+NEW cerrado | n | 结束
+NEW sabido | adj | 已知
+NEW disculpas | n | 抱歉
+NEW cura | n | 护理

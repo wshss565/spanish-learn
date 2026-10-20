@@ -1,4 +1,38 @@
-# 本地临时文件，不入库
-_commitmsg.txt
-_*.log
+# 依赖与缓存
+node_modules/
+__pycache__/
+
+# books.js 的多份历史备份（正式数据只有 js/data/books.js）
+*.bak*
+
+# 构建产物副本（正式产物在 share/，由 build-standalone.js 生成）
+standalone.html
+
+# 本地临时文件与一次性诊断脚本
 _*.txt
+_*.log
+_*.md
+_*.mjs
+_*.js
+_*.html
+_*.py
+_*.cjs
+_*.json
+_addex.js
+_dbg*.js
+_patch_ipa.js
+a.json
+b.json
+nul
+
+# 例外：词书扩容管线脚本。它是 C1/C2 机翻注入的来源，清理时要对照，故留档。
+# （配套的 _trans_cache.json 约 1 MB 翻译缓存未入库，可由脚本重新生成。）
+!_route2.py
+
+# 演示与草稿输出目录
+demo/
+_publish/
+.workbuddy/
+
+# 仓库内局部忽略
+share/_*.txt

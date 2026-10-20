@@ -1,0 +1,18 @@
+A1 可信且需例句 17 条（新写 17 / 替换已有例句 0）
+NEW del | prep | 的（de + el）
+NEW cosas | n | 东西；事情（cosa 复数）
+NEW buen | n | 好的（bueno 的断音形，用于阳单名词前）
+NEW hacerlo | n | 做这件事（hacer + lo）
+NEW importa | n | （它）重要；有关系（no importa 没关系）
+NEW vaya | n | 去（ir 虚拟式）；算了吧
+NEW nueva | n | 新的（nuevo 阴性）
+NEW minutos | n | 分钟（复数）
+NEW primer | v | 第一（primero 的断音形，用于阳单名词前）
+NEW mas | n | 但是（书面语，= pero）
+NEW sino | n | 但是；而是（sino）
+NEW mejores | n | 更好的（bueno 复数）
+NEW embargo | n | 禁运（sin embargo 然而）
+NEW muerta | n | 死的（muerto 阴性）
+NEW muertos | n | 死者（muerto 复数）
+NEW segunda | n | 第二（segunda）
+NEW tipos | n | 类型（tipo 复数）

@@ -1,0 +1,4 @@
+# 本地临时文件，不入库
+_commitmsg.txt
+_*.log
+_*.txt
