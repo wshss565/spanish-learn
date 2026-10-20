@@ -1,5 +1,7 @@
 // Service Worker：离线缓存应用外壳，断网也能打开学习
-const CACHE = 'hola-es-v4';   // 外壳（CSS/JS/主题/数据）变更后升版，强制已安装客户端刷新缓存
+const CACHE = 'hola-es-v5';   // 外壳（CSS/JS/主题/数据）变更后升版，强制已安装客户端刷新缓存
+// v5：源码版模块图变更（js/core/store.js 改用相对路径引 ts-fsrs）。
+//      静态资源走 cache-first，老访客若还用 v4 缓存里的旧 store.js 会继续白屏，必须升版。
 const ASSETS = [
   './',
   './index.html',
