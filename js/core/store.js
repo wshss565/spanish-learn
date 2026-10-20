@@ -1,5 +1,8 @@
 // 存储服务：统一词库 / 进度 / 段位（模块只通过此服务读写，不直接碰 localStorage）
-import { FSRS, Rating, createEmptyCard, default_w } from 'ts-fsrs';
+// ts-fsrs 走仓库内置的浏览器原生 ESM 产物（js/vendor/ts-fsrs.js，MIT）。
+// 原来写的是裸模块名 'ts-fsrs'，浏览器解析不了裸模块名 → 模块图加载失败 → 整站白屏；
+// esbuild 构建单文件版时能解析，所以只有"源码版直接在浏览器跑"这条路径会挂。
+import { FSRS, Rating, createEmptyCard, default_w } from '../vendor/ts-fsrs.js';
 
 const KEY = 'es_mvp_v1';
 const DEFAULT = { words: [], assessments: [], streak: 0, log: [], time: {}, settings: { rate: 0.9 } };
