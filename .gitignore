@@ -10,6 +10,10 @@ __pycache__/
 standalone.html
 
 # 运行日志与脚本输出
+build_log.txt
+count_log.txt
+route2_log.txt
+route2_log_utf8.txt
 *.log
 smoke_result.txt
 .*_out.txt

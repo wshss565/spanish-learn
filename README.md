@@ -86,16 +86,21 @@ python -m http.server 8080
 产出一个可单文件分发的 `standalone.html`，并同步到 `share/`：
 
 ```bash
-node build-standalone.js
+node tools/build-standalone.js
 ```
 
 ### 回归与静态检查
 
+所有工具都在 `tools/`，**在仓库根目录执行**：
+
 ```bash
-node smoke.js        # jsdom 冒烟回归，结果写入 smoke_result.txt
-node css-lint.js     # 检查媒体查询里的声明是否被后续规则反超
-node validate-books.mjs   # 校验各等级词书的重复与结构
-node data-lint.mjs [等级]  # 生成该等级的待补例句工作单与质量报告
+node tools/smoke.js            # jsdom 冒烟回归，结果写入 smoke_result.txt
+node tools/css-lint.js         # 检查媒体查询里的声明是否被后续规则反超
+node tools/validate-books.mjs  # 校验各等级词书的重复与结构
+node tools/check-imports.mjs   # 校验源码的 import 图可被浏览器直接加载
+node tools/check-boot.mjs      # 用 jsdom 按浏览器语义真实加载源码版入口
+node tools/data-lint.mjs [等级] # 生成该等级的待补例句工作单与质量报告
+node tools/run-pipeline.mjs    # 串行跑 build / css-lint / smoke
 ```
 
 > Windows 下若 `node` 不在 PATH，可用托管版本：
@@ -123,7 +128,8 @@ node data-lint.mjs [等级]  # 生成该等级的待补例句工作单与质量�
 │   │   ├── corpus.js       # 例句语料
 │   │   ├── clock.js        # 学习计时
 │   │   ├── bus.js          # 模块间事件总线
-│   │   └── util.js
+│   │   ├── util.js
+│   │   └── vendor/         # 随仓库分发的第三方浏览器版 ESM（ts-fsrs）
 │   └── data/
 │       ├── books.js        # 六级词库（唯一的词条数据源）
 │       ├── content.js      # 文案与配置
@@ -131,10 +137,30 @@ node data-lint.mjs [等级]  # 生成该等级的待补例句工作单与质量�
 ├── sw.js                   # Service Worker
 ├── manifest.webmanifest
 ├── share/                  # 构建输出（单文件版 + PWA 资源）
-└── *.mjs                   # 构建、校验、词库维护脚本
+├── tools/                  # 工具链（在仓库根执行）
+│   ├── build-standalone.js # 构建单文件版 → standalone.html + share/
+│   ├── smoke.js            # jsdom 冒烟回归
+│   ├── css-lint.js         # CSS 死声明检查
+│   ├── validate-books.mjs  # 词书结构校验
+│   ├── check-imports.mjs   # import 图检查（支持 --live 巡检线上）
+│   ├── check-boot.mjs      # 源码版启动检查（浏览器原生 ESM 语义）
+│   ├── data-lint.mjs       # 词书质量体检 → docs/reports/
+│   ├── add-examples.mjs    # 例句写回 books.js
+│   ├── analyze-worklist.mjs # 工作单解析 → docs/reports/
+│   ├── run-pipeline.mjs    # 串行跑 build / css-lint / smoke
+│   └── legacy/             # 一次性历史维护脚本（clean-* / fix-* / diag-* …）
+├── data/examples/          # 例句批次源（examples-*.mjs）
+├── docs/
+│   ├── wrap-up-plan.md     # 收尾方案
+│   ├── quality-review.md   # 质量体检
+│   └── reports/            # 自动生成的审计报告（各轮复核报告、各等级清单与工作单）
+└── scripts/                # 词书扩容管线（_route2.py），留档供追溯
 ```
 
 架构约定：模块之间**只通过 `bus` 通信，不得互相 import**；共享服务由 `app.js` 的 `ctxFor()` 注入。
+
+> 约定：`tools/` 里的脚本都**在仓库根目录执行**；`books.js` 等数据文件按 cwd 相对路径定位。
+> 脚本从根目录挪进子目录后，脚本相对 import 已统一加深一级（`'./js/` → `'../js/`）。
 
 ---
 
